@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Cán Bộ - Giảng Viên</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            padding: 40px;
+            color: #333;
+
+            /* Gradient chuyển màu động */
+            background: linear-gradient(-45deg, #00c6ff, #0072ff, #c8a7e7, #5eeea8);
+            background-size: 400% 400%;
+            animation: gradientBG 30s ease infinite;
+        }
+
+        /* Keyframes cho gradient động */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container { max-width: 1800px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(90deg, #007bff, #0056b3); color: white; padding: 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; text-shadow: 2px 2px 5px rgba(0,0,0,0.4); }
+        .navbar { background: #343a40; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: center; }
+        .navbar a { color: white; text-decoration: none; font-weight: bold; padding: 8px 16px; border-radius: 5px; transition: all 0.3s; }
+        .navbar a:hover, .navbar a.active { background: #007bff; transform: translateY(-2px); }
+        .top-bar { padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+        .user-info { font-weight: bold; color: #007bff; }
+        .logout-form { display: inline; }
+        .logout-btn { background: #555555; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .logout-btn:hover { background: #6c6c6c; transform: translateY(-2px); }
+        .btn { padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; margin: 5px; transition: all 0.3s; }
+        .btn-add { background: #28a745; color: white; } .btn-add:hover { background: #218838; }
+        .btn-edit { background: #ffc107; color: black; } .btn-edit:hover { background: #e0a800; }
+        .btn-delete { background: #dc3545; color: white; } .btn-delete:hover { background: #c82333; }
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 20px;
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .search-form input[type="text"] {
+            flex: 1 1 200px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .search-form button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .search-form button:hover { background: #0056b3; }
+        .search-form a {
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            transition: all 0.3s;
+        }
+        .search-form a:hover { background: #dc3545; color: white; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: #007bff; color: white; padding: 15px 10px; text-align: center; font-weight: bold; }
+        td { padding: 12px 10px; text-align: center; border-bottom: 1px solid #dee2e6; }
+        tr:hover { background: #f8f9fa; }
+        table img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #007bff;
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .pagination a {
+            padding: 8px 14px;
+            background: #007bff;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .pagination a:hover { background: #0056b3; }
+        .pagination span { font-weight: bold; }
+        .alert { padding: 15px; margin: 20px; border-radius: 8px; font-weight: bold; text-align: center; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        @media (max-width: 768px) {
+            .top-bar { flex-direction: column; text-align: center; }
+            .search-form { flex-direction: column; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; padding: 10px; background: #fff; }
+            td { text-align: right; position: relative; padding-left: 50%; }
+            td::before { content: attr(data-label); position: absolute; left: 15px; width: 45%; font-weight: bold; text-align: left; color: #007bff; }
+            table img {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 50%;
+                border: 3px solid #007bff;
+            }
+
+        }
+        /* ===== IMAGE MODAL ===== */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .image-modal img {
+            width: 30vw;
+            height: auto;
+            max-height: 65vh;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            animation: zoomIn 0.3s ease;
+        }
+
+
+        .image-modal .close-btn {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.7); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="header"><h1>HỆ THỐNG QUẢN LÝ CÁN BỘ - GIẢNG VIÊN</h1></div>
+
+    <div class="navbar">
+        <a th:href="@{/canbo}" class="active">Danh sách cán bộ</a>
+        <a th:href="@{/luong}">Quản lý lương</a>
+        <a th:href="@{/chucvu}">Chức vụ</a>
+        <a th:href="@{/khoa}">Khoa</a>
+        <a th:href="@{/bomon}">Bộ môn</a>
+        <a th:href="@{/hocvi}">Học vị</a>
+        <a th:href="@{/hopdong}">Hợp đồng</a>
+        <a th:href="@{/taikhoan}">Tài khoản</a>
+    </div>
+
+    <div class="top-bar">
+        <div class="user-info">
+            Xin chào: <strong sec:authentication="name">User</strong>
+        </div>
+        <form class="logout-form" th:action="@{/logout}" method="post"
+              onsubmit="return confirm('Bạn có chắc chắn muốn đăng xuất không?')">
+            <button type="submit" class="logout-btn">Đăng xuất</button>
+        </form>
+    </div>
+
+    <div th:if="${param.logout}" class="alert alert-info">Đăng xuất thành công!</div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${message}" class="alert alert-danger" th:text="${message}"></div>
+
+    <div style="padding: 0 20px 10px; text-align: right;">
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/canbo/add}" class="btn btn-add">+ Thêm Cán Bộ Mới</a>
+    </div>
+    <div class="alert alert-success" sec:authorize="hasRole('ADMIN')">
+        Số lượng cán bộ: 
+        <b th:text="${totalCanBo}"></b>
+    </div>
+
+
+    <form th:action="@{/canbo/search}" method="get" class="search-form">
+        <input type="text" name="absolute" th:value="${absolute}" placeholder="Tìm chính xác">
+        <input type="text" name="relative" th:value="${relative}" placeholder="Tìm gần đúng">
+        <button type="submit">Tìm kiếm</button>
+        <a th:if="${(absolute != null and absolute != '') or (relative != null and relative != '')}" th:href="@{/canbo}">Xóa bộ lọc</a>
+    </form>
+
+    <!-- BẢNG DỮ LIỆU – ĐÃ SỬA LỖI PADSTART -->
+    <table>
+        <thead>
+            <tr>
+                <th>Ảnh</th>
+                <th>Mã Cán Bộ</th>
+                <th>Họ Tên</th>
+                <th>Giới Tính</th>
+                <th>Ngày Sinh</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Địa Chỉ</th>
+                <th>Học Vị</th>
+                <th>Chức Vụ</th>
+                <th>Bộ Môn</th>
+                <th>Ngày Vào Trường</th>
+                <th>Trạng Thái</th>
+                <th>Thao Tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="cb : ${listCanBo}">
+                <td data-label="Ảnh">
+                    <img th:if="${cb.hinhAnh}" 
+                        th:src="@{'/images/' + ${cb.hinhAnh}}"
+                        alt="Ảnh"
+                        style="cursor: pointer"
+                        onclick="openImage(this.src)"
+                        onerror="this.src='https://via.placeholder.com/150/007bff/ffffff?text=AVT'">
+
+                </td>
+
+                <!-- SỬA LỖI PADSTART → DÙNG JAVA FORMAT -->
+                <td data-label="Mã CB" 
+                    th:text="'CB' + ${T(java.lang.String).format('%03d', cb.maCB)}">
+                </td>
+
+                <td data-label="Họ Tên" th:text="${cb.hoTen}"></td>
+                <td data-label="Giới Tính" th:text="${cb.gioiTinh}"></td>
+                <td data-label="Ngày Sinh" th:text="${#dates.format(cb.ngaySinh, 'dd/MM/yyyy')}"></td>
+                <td data-label="Email" th:text="${cb.email}"></td>
+                <td data-label="SĐT" th:text="${cb.soDienThoai}"></td>
+                <td data-label="Địa Chỉ" th:text="${cb.diaChi}"></td>
+                <td data-label="Học Vị" th:text="${cb.hocVi?.tenHocVi ?: 'Chưa có'}"></td>
+                <td data-label="Chức Vụ" th:text="${cb.chucVu?.tenChucVu ?: 'Chưa có'}"></td>
+                <td data-label="Bộ Môn" th:text="${cb.boMon?.tenBoMon ?: 'Chưa có'}"></td>
+                <td data-label="Ngày Vào" th:text="${#dates.format(cb.ngayVaoTruong, 'dd/MM/yyyy')}"></td>
+                <td data-label="Trạng Thái">
+                    <span th:text="${cb.trangThai ? 'Đang công tác' : 'Nghỉ việc'}"
+                          th:style="${cb.trangThai ? 'color:green;font-weight:bold' : 'color:red;font-weight:bold'}"></span>
+                </td>
+                <td data-label="Thao Tác">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/canbo/edit/{id}(id=${cb.maCB})}" class="btn btn-edit">✏ Sửa</a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/canbo/delete/{id}(id=${cb.maCB})}" class="btn btn-delete"
+                       onclick="return confirm('Xóa vĩnh viễn cán bộ này?');">🗑 Xóa</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <a th:if="${page != null and page.hasPrevious()}" th:href="@{/canbo(page=${page.number - 1})}">« Trước</a>
+        <span th:text="'Trang ' + ${page.number + 1} + ' / ' + ${page.totalPages}"></span>
+        <a th:if="${page != null and page.hasNext()}" th:href="@{/canbo(page=${page.number + 1})}">Sau »</a>
+    </div>
+</div>
+<!-- IMAGE MODAL -->
+<div id="imageModal" class="image-modal" onclick="closeImage()">
+    <span class="close-btn">&times;</span>
+    <img id="modalImage" src="" onclick="event.stopPropagation()">
+</div>
+<script>
+    function openImage(src) {
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImage");
+        modalImg.src = src;
+        modal.style.display = "flex";
+    }
+
+    function closeImage() {
+        document.getElementById("imageModal").style.display = "none";
+    }
+</script>
+
+</body>
+</html>

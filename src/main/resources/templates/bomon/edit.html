@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Bộ môn</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-5">
+
+    <h2 class="text-center mb-4">Chỉnh Sửa Bộ môn</h2>
+
+    <form th:action="@{/bomon/edit}" th:object="${boMon}" method="post" class="card p-4 shadow">
+
+        <!-- Hidden ID -->
+        <input type="hidden" th:field="*{maBoMon}">
+
+        <!-- Tên bộ môn -->
+        <div class="mb-3">
+            <label for="tenBoMon" class="form-label">Tên Bộ môn</label>
+            <input type="text" id="tenBoMon" class="form-control" th:field="*{tenBoMon}" required>
+        </div>
+
+        <!-- Thuộc Khoa -->
+        <div class="mb-3">
+            <label for="khoa" class="form-label">Thuộc Khoa</label>
+            <select id="khoa" class="form-select" th:field="*{khoa}" required>
+                <option th:each="k : ${listKhoa}" th:value="${k.maKhoa}" th:text="${k.tenKhoa}"></option>
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+            <a th:href="@{/bomon}" class="btn btn-secondary px-4">Hủy</a>
+        </div>
+
+    </form>
+
+</body>
+</html>

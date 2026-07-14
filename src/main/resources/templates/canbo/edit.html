@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh Sửa Cán Bộ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+
+    <h2 class="text-center mb-4">Chỉnh Sửa Cán Bộ</h2>
+
+    <form th:action="@{/canbo/update}" th:object="${canbo}" method="post" enctype="multipart/form-data" class="card p-4 shadow">
+
+        <input type="hidden" th:field="*{maCB}" />
+
+        <!-- Họ tên -->
+        <div class="mb-3">
+            <label class="form-label">Họ tên</label>
+            <input type="text" class="form-control" th:field="*{hoTen}" placeholder="Nhập họ tên..." required>
+        </div>
+
+        <!-- Giới tính -->
+        <div class="mb-3">
+            <label class="form-label">Giới tính</label>
+            <select class="form-select" th:field="*{gioiTinh}">
+                <option value="Nam" th:selected="${canbo.gioiTinh == 'Nam'}">Nam</option>
+                <option value="Nữ" th:selected="${canbo.gioiTinh == 'Nữ'}">Nữ</option>
+            </select>
+        </div>
+
+        <!-- Ngày sinh -->
+        <div class="mb-3">
+            <label class="form-label">Ngày sinh</label>
+            <input type="date" class="form-control" th:field="*{ngaySinh}" required>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" th:field="*{email}" placeholder="example@gmail.com">
+        </div>
+
+        <!-- Số điện thoại -->
+        <div class="mb-3">
+            <label class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" th:field="*{soDienThoai}" placeholder="0123456789">
+        </div>
+
+        <!-- Địa chỉ -->
+        <div class="mb-3">
+            <label class="form-label">Địa chỉ</label>
+            <input type="text" class="form-control" th:field="*{diaChi}" placeholder="Nhập địa chỉ...">
+        </div>
+
+        <!-- Ngày vào trường -->
+        <div class="mb-3">
+            <label class="form-label">Ngày vào trường</label>
+            <input type="date" class="form-control" th:field="*{ngayVaoTruong}" required>
+        </div>
+
+        <!-- Trạng thái -->
+        <div class="mb-3">
+            <label class="form-label">Trạng thái</label>
+            <select class="form-select" th:field="*{trangThai}">
+                <option value="true" th:selected="${canbo.trangThai == true}">Đang công tác</option>
+                <option value="false" th:selected="${canbo.trangThai == false}">Nghỉ việc</option>
+            </select>
+        </div>
+
+        <!-- Học vị -->
+        <div class="mb-3">
+            <label class="form-label">Học vị</label>
+            <select class="form-select" th:field="*{hocVi.maHocVi}" required>
+                <option th:each="hv : ${listHocVi}" th:value="${hv.maHocVi}" th:text="${hv.tenHocVi}"></option>
+            </select>
+        </div>
+
+        <!-- Chức vụ -->
+        <div class="mb-3">
+            <label class="form-label">Chức vụ</label>
+            <select class="form-select" th:field="*{chucVu.maChucVu}" required>
+                <option th:each="cv : ${listChucVu}" th:value="${cv.maChucVu}" th:text="${cv.tenChucVu}"></option>
+            </select>
+        </div>
+
+        <!-- Bộ môn -->
+        <div class="mb-3">
+            <label class="form-label">Bộ môn</label>
+            <select class="form-select" th:field="*{boMon.maBoMon}" required>
+                <option th:each="bm : ${listBoMon}" th:value="${bm.maBoMon}" th:text="${bm.tenBoMon}"></option>
+            </select>
+        </div>
+
+        <!-- Ảnh cán bộ -->
+        <div class="mb-3">
+            <label class="form-label">Ảnh cán bộ</label>
+            <input type="file" class="form-control" name="file" accept="image/*" onchange="previewImage(event)">
+        </div>
+
+        <!-- Ảnh xem trước -->
+        <div class="mb-3 text-center">
+            <img id="preview" src="#" alt="Xem trước ảnh" style="max-width:150px; display:none; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.3);">
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success px-4">Lưu thay đổi</button>
+            <a th:href="@{/canbo}" class="btn btn-secondary px-4">Quay lại</a>
+        </div>
+
+    </form>
+
+    <script>
+        function previewImage(event) {
+            const preview = document.getElementById('preview');
+            const file = event.target.files[0];
+            if(file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>

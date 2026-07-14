@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh Sửa Lương</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-5">
+
+    <h2 class="text-center mb-4">Chỉnh Sửa Lương</h2>
+
+    <form th:action="@{/luong/save}" th:object="${luong}" method="post" class="card p-4 shadow">
+
+        <input type="hidden" th:field="*{maLuong}" />
+
+        <!-- Cán bộ -->
+        <div class="mb-3">
+            <label class="form-label">Cán Bộ</label>
+            <select class="form-select" th:field="*{canBo.maCB}" required>
+                <option value="">-- Chọn cán bộ --</option>
+                <option th:each="cb : ${listCanBo}"
+                        th:value="${cb.maCB}"
+                        th:text="'CB' 
+                            + (${cb.maCB} < 10 ? '00' : (${cb.maCB} < 100 ? '0' : '')) 
+                            + ${cb.maCB} 
+                            + ' - ' 
+                            + ${cb.hoTen}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Tháng -->
+        <div class="mb-3">
+            <label class="form-label">Tháng</label>
+            <input type="number" class="form-control" th:field="*{thang}" min="1" max="12" required>
+        </div>
+
+        <!-- Năm -->
+        <div class="mb-3">
+            <label class="form-label">Năm</label>
+            <input type="number" class="form-control" th:field="*{nam}" min="2000" max="2100" required>
+        </div>
+
+        <!-- Lương cơ bản -->
+        <div class="mb-3">
+            <label class="form-label">Lương cơ bản (VNĐ)</label>
+            <input type="number" class="form-control" th:field="*{luongCoBan}" step="0.01" required>
+        </div>
+
+        <!-- Phụ cấp -->
+        <div class="mb-3">
+            <label class="form-label">Thưởng - Phạt + Phụ cấp (VNĐ)</label>
+            <input type="number" class="form-control" th:field="*{phuCap}" step="0.01">
+        </div>
+
+        <!-- Ngày tính lương -->
+        <div class="mb-3">
+            <label class="form-label">Ngày tính lương</label>
+            <input type="date" class="form-control" th:field="*{ngayTinhLuong}">
+        </div>
+
+        <!-- Buttons -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success px-4">Lưu thay đổi</button>
+            <a th:href="@{/luong}" class="btn btn-secondary px-4">Quay Lại</a>
+        </div>
+
+    </form>
+
+</body>
+</html>

@@ -34,8 +34,12 @@ public class HopDongController {
         if (role.equals("ADMIN")) {
             model.addAttribute("listHopDong", hopDongService.getAll());
         } else { // GIANGVIEN
-            Integer maCB = tk.getCanBo().getMaCB();
-            model.addAttribute("listHopDong", hopDongService.getByCanBo(maCB));
+            if (tk.getCanBo() != null) {
+                Integer maCB = tk.getCanBo().getMaCB();
+                model.addAttribute("listHopDong", hopDongService.getByCanBo(maCB));
+            } else {
+                model.addAttribute("listHopDong", java.util.List.of());
+            }
         }
 
         return "hopdong/list";
@@ -86,7 +90,7 @@ public class HopDongController {
         HopDong hd = hopDongService.getById(id);
 
         if (role.equals("GIANGVIEN") &&
-                !hd.getCanBo().getMaCB().equals(tk.getCanBo().getMaCB())) {
+                (tk.getCanBo() == null || hd.getCanBo() == null || !hd.getCanBo().getMaCB().equals(tk.getCanBo().getMaCB()))) {
             return "redirect:/access-denied";
         }
 
@@ -103,7 +107,7 @@ public class HopDongController {
         String role = tk.getVaiTro().toUpperCase();
 
         if (role.equals("GIANGVIEN") &&
-                !hopDong.getCanBo().getMaCB().equals(tk.getCanBo().getMaCB())) {
+                (tk.getCanBo() == null || hopDong.getCanBo() == null || !hopDong.getCanBo().getMaCB().equals(tk.getCanBo().getMaCB()))) {
             return "redirect:/access-denied";
         }
 
@@ -121,7 +125,7 @@ public class HopDongController {
         HopDong hd = hopDongService.getById(id);
 
         if (role.equals("GIANGVIEN") &&
-                !hd.getCanBo().getMaCB().equals(tk.getCanBo().getMaCB())) {
+                (tk.getCanBo() == null || hd.getCanBo() == null || !hd.getCanBo().getMaCB().equals(tk.getCanBo().getMaCB()))) {
             return "redirect:/access-denied";
         }
 

@@ -107,9 +107,21 @@ public class CanBoController {
             if (filePath != null)
                 canBo.setHinhAnh(filePath);
 
-            canBo.setHocVi(hocViService.getHocViById(canBo.getHocVi().getMaHocVi()));
-            canBo.setChucVu(chucVuService.getChucVuById(canBo.getChucVu().getMaChucVu()));
-            canBo.setBoMon(boMonService.getBoMonById(canBo.getBoMon().getMaBoMon()));
+            if (canBo.getHocVi() != null && canBo.getHocVi().getMaHocVi() > 0) {
+                canBo.setHocVi(hocViService.getHocViById(canBo.getHocVi().getMaHocVi()));
+            } else {
+                canBo.setHocVi(null);
+            }
+            if (canBo.getChucVu() != null && canBo.getChucVu().getMaChucVu() > 0) {
+                canBo.setChucVu(chucVuService.getChucVuById(canBo.getChucVu().getMaChucVu()));
+            } else {
+                canBo.setChucVu(null);
+            }
+            if (canBo.getBoMon() != null && canBo.getBoMon().getMaBoMon() > 0) {
+                canBo.setBoMon(boMonService.getBoMonById(canBo.getBoMon().getMaBoMon()));
+            } else {
+                canBo.setBoMon(null);
+            }
 
             canBoService.saveCanBo(canBo);
             redirectAttributes.addFlashAttribute("success", "Thêm cán bộ thành công!");
@@ -153,9 +165,21 @@ public class CanBoController {
             existing.setNgayVaoTruong(canBo.getNgayVaoTruong());
             existing.setTrangThai(canBo.getTrangThai());
 
-            existing.setHocVi(hocViService.getHocViById(canBo.getHocVi().getMaHocVi()));
-            existing.setChucVu(chucVuService.getChucVuById(canBo.getChucVu().getMaChucVu()));
-            existing.setBoMon(boMonService.getBoMonById(canBo.getBoMon().getMaBoMon()));
+            if (canBo.getHocVi() != null && canBo.getHocVi().getMaHocVi() > 0) {
+                existing.setHocVi(hocViService.getHocViById(canBo.getHocVi().getMaHocVi()));
+            } else {
+                existing.setHocVi(null);
+            }
+            if (canBo.getChucVu() != null && canBo.getChucVu().getMaChucVu() > 0) {
+                existing.setChucVu(chucVuService.getChucVuById(canBo.getChucVu().getMaChucVu()));
+            } else {
+                existing.setChucVu(null);
+            }
+            if (canBo.getBoMon() != null && canBo.getBoMon().getMaBoMon() > 0) {
+                existing.setBoMon(boMonService.getBoMonById(canBo.getBoMon().getMaBoMon()));
+            } else {
+                existing.setBoMon(null);
+            }
 
             canBoService.saveCanBo(existing);
 
@@ -181,7 +205,12 @@ public class CanBoController {
         if (!folder.exists())
             folder.mkdirs();
 
-        String fileName = file.getOriginalFilename();
+        String originalName = file.getOriginalFilename();
+        String extension = "";
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf("."));
+        }
+        String fileName = java.util.UUID.randomUUID().toString() + extension;
         Path path = Paths.get(uploadDir + fileName);
         Files.write(path, file.getBytes());
 

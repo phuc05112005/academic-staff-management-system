@@ -70,6 +70,7 @@ public class TaiKhoanController {
             @RequestParam(defaultValue = "0") int page) {
 
         TaiKhoan tkLogin = taiKhoanService.findByTenDangNhap(principal.getName());
+        if (tkLogin == null) return "redirect:/login?error=session";
 
         String vaiTro = tkLogin.getVaiTro() == null ? "" : tkLogin.getVaiTro().trim().toUpperCase();
         if (!"ADMIN".equals(vaiTro)) {
@@ -92,6 +93,7 @@ public class TaiKhoanController {
     @GetMapping("/add")
     public String addForm(Model model, Principal principal) {
         TaiKhoan tkLogin = taiKhoanService.findByTenDangNhap(principal.getName());
+        if (tkLogin == null) return "redirect:/login?error=session";
 
         if (!"ADMIN".equalsIgnoreCase(tkLogin.getVaiTro())) {
             return "redirect:/taikhoan?error=forbidden";
@@ -111,7 +113,11 @@ public class TaiKhoanController {
         var cb = canBoRepo.findById(canBoId).orElse(null);
         tk.setCanBo(cb);
 
-        tk.setMatKhau(passwordEncoder.encode(tk.getMatKhau()));
+        if (tk.getMatKhau() != null && !tk.getMatKhau().isEmpty()) {
+            tk.setMatKhau(passwordEncoder.encode(tk.getMatKhau()));
+        } else {
+            tk.setMatKhau(""); 
+        }
 
         taiKhoanService.save(tk);
         return "redirect:/taikhoan?success=added";
@@ -123,6 +129,8 @@ public class TaiKhoanController {
             Principal principal) {
 
         TaiKhoan tkLogin = taiKhoanService.findByTenDangNhap(principal.getName());
+        if (tkLogin == null) return "redirect:/login?error=session";
+        
         TaiKhoan tk = taiKhoanService.findByTenDangNhap(tenDangNhap);
 
         if (tk == null) {
@@ -151,6 +159,8 @@ public class TaiKhoanController {
             Principal principal) {
 
         TaiKhoan tkLogin = taiKhoanService.findByTenDangNhap(principal.getName());
+        if (tkLogin == null) return "redirect:/login?error=session";
+        
         TaiKhoan tk = taiKhoanService.findByTenDangNhap(tkForm.getTenDangNhap());
 
         if (tk == null) {
@@ -186,6 +196,7 @@ public class TaiKhoanController {
             Principal principal) {
 
         TaiKhoan tkLogin = taiKhoanService.findByTenDangNhap(principal.getName());
+        if (tkLogin == null) return "redirect:/login?error=session";
 
         if (!"ADMIN".equals(tkLogin.getVaiTro())) {
             return "redirect:/taikhoan?error=forbidden";

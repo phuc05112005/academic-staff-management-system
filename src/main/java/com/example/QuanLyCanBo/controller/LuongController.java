@@ -68,6 +68,12 @@ public class LuongController {
         }
 
         if ("GIANGVIEN".equals(role)) {
+            if (tk.getCanBo() == null) {
+                model.addAttribute("listLuong", List.of());
+                model.addAttribute("page", null);
+                model.addAttribute("hasLuong", false);
+                return "luong/list";
+            }
 
             Integer maCB = tk.getCanBo().getMaCB();
 
